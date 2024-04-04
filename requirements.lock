@@ -26,6 +26,8 @@ contourpy==1.2.1
     # via matplotlib
 cycler==0.12.1
     # via matplotlib
+duckdb==0.10.1
+    # via slpredictions
 etuples==0.3.9
     # via minikanren
     # via pytensor

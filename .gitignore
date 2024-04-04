@@ -8,3 +8,5 @@ wheels/
 
 # venv
 .venv
+src/slpredictions/secrets.py
+.vscode/settings.json
