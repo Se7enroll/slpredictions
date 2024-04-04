@@ -1,10 +1,29 @@
 import requests
 import pandas as pd
+from diskcache import Cache
 from pandas import DataFrame
 
 # Generate your own access token from superliga.dk
 from .at import access_token
 
+def persist_to_file(file_name="apicache.dat"):
+    def decorator(original_func):
+        try:
+            cache = Cache(file_name)
+        except (IOError, ValueError):
+            cache = {}
+
+        def new_func(*args, **kwargs):
+            key = str(args) + str(kwargs)
+            if key not in cache:
+                cache[key] = original_func(*args, **kwargs)
+            return cache[key]
+
+        return new_func
+
+    return decorator
+
+@persist_to_file()
 def get_seasons_json() -> DataFrame:
     try:
         r = requests.get(_get_season_endpoint())
@@ -14,7 +33,7 @@ def get_seasons_json() -> DataFrame:
     except Exception:
         Exception("Error getting seasons.")
 
-
+@persist_to_file()
 def get_matches(season_id: int) -> DataFrame:
     try:
         r = requests.get(_get_matches_endpoint(season_id))
@@ -39,7 +58,7 @@ def get_matches(season_id: int) -> DataFrame:
     except Exception:
         Exception("Error while getting match details.")
 
-
+@persist_to_file()
 def get_match_data(event_id: int) -> DataFrame:
     try:
         r = requests.get(_get_match_data_endpoint(event_id))
