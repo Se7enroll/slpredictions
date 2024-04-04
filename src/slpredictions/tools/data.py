@@ -6,6 +6,7 @@ from pandas import DataFrame
 # Generate your own access token from superliga.dk
 from .at import access_token
 
+
 def persist_to_file(file_name="apicache.dat"):
     def decorator(original_func):
         try:
@@ -23,6 +24,7 @@ def persist_to_file(file_name="apicache.dat"):
 
     return decorator
 
+
 @persist_to_file()
 def get_seasons_json() -> DataFrame:
     try:
@@ -32,6 +34,7 @@ def get_seasons_json() -> DataFrame:
         return pd.DataFrame(json["seasons"])
     except Exception:
         Exception("Error getting seasons.")
+
 
 @persist_to_file()
 def get_matches(season_id: int) -> DataFrame:
@@ -57,6 +60,7 @@ def get_matches(season_id: int) -> DataFrame:
         ]
     except Exception:
         Exception("Error while getting match details.")
+
 
 @persist_to_file()
 def get_match_data(event_id: int) -> DataFrame:
