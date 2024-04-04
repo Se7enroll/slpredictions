@@ -1,4 +1,4 @@
-import slpredictions
+import slpredictions.tools as tools
 import sys
 
-sys.exit(slpredictions.main())
+sys.exit(tools.main())
