@@ -10,3 +10,8 @@ wheels/
 .venv
 .vscode/settings.json
 src/slpredictions/tools/at.py
+
+# cache and db
+src/slpredictions/*.db
+src/slpredictions/apicache.dat
+src/slpredictions/apicache.dat/*
