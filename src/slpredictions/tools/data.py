@@ -14,26 +14,26 @@ def persist_to_file(file_name="apicache.dat"):
         except (IOError, ValueError):
             cache = {}
 
-        def new_func(*args, **kwargs):
+        def cached_func(*args, **kwargs):
             key = str(args) + str(kwargs)
             if key not in cache:
                 cache[key] = original_func(*args, **kwargs)
             return cache[key]
 
-        return new_func
+        return cached_func
 
     return decorator
 
 
 @persist_to_file()
-def get_seasons_json() -> DataFrame:
+def get_seasons() -> DataFrame:
     try:
         r = requests.get(_get_season_endpoint())
         json = r.json()
         print(f"Seasons downloaded. Current season {json['seasonId']}")
         return pd.DataFrame(json["seasons"])
-    except Exception:
-        Exception("Error getting seasons.")
+    except Exception as e:
+        Exception("Error getting seasons.", e)
 
 
 @persist_to_file()
@@ -45,11 +45,13 @@ def get_matches(season_id: int) -> DataFrame:
         # filter out additional columns
         return res[
             [
+                "tournamentId",
+                "roundNr",
                 "eventId",
                 "homeId",
                 "awayId",
-                "tournamentId",
-                "roundNr",
+                "homeName",
+                "awayName",
                 "detailedScore",
                 "stoppageTimeHT",
                 "stoppageTimeFT",
@@ -58,8 +60,8 @@ def get_matches(season_id: int) -> DataFrame:
                 "statusType",
             ]
         ]
-    except Exception:
-        Exception("Error while getting match details.")
+    except Exception as e:
+        Exception("Error while getting match details.", e)
 
 
 @persist_to_file()
@@ -77,8 +79,8 @@ def get_match_data(event_id: int) -> DataFrame:
         res = res.assign(eventId=event_id)
         res.set_index(["eventId"], append=True, inplace=True)
         return res
-    except Exception:
-        Exception(f"Error getting match data for match: {event_id}")
+    except Exception as e:
+        Exception(f"Error getting match data for match: {event_id}", e)
 
 
 # base end points
