@@ -1,7 +1,12 @@
 import logging
-import pandas as pd
 import duckdb as db
-from .data import get_seasons, get_matches, get_match_stats, get_momentum, get_xg_time
+from .sldk_api import (
+    get_seasons,
+    get_matches,
+    get_match_stats,
+    get_momentum,
+    get_xg_time,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -28,11 +33,11 @@ def main() -> int:
 
             # Check if matches already exists if not download matches.
             logger.info("Getting matches for season id %s...", season_id)
-            #if not con.sql(
-            #    f"SELECT * FROM Matches WHERE tournamentId = {season_id} LIMIT 1;"
-            #).fetchone():
-            #    logger.info("season %s already in database. Skipping.", season_id)
-            #    continue
+            if not con.sql(
+                f"SELECT * FROM Matches WHERE tournamentId = {season_id} LIMIT 1;"
+            ).fetchone():
+                logger.info("season %s already in database. Skipping.", season_id)
+                continue
 
             matches_df = get_matches(season_id)
 
@@ -62,7 +67,10 @@ def main() -> int:
 
                     if match_row["hasOptaMomentum"] is True:  # hasMomentum can be nan
                         match_momentum_df = get_momentum(match_row["eventId"])
-                        if match_momentum_df is not None and not match_momentum_df.empty:
+                        if (
+                            match_momentum_df is not None
+                            and not match_momentum_df.empty
+                        ):
                             con.sql(
                                 "INSERT INTO MatchMomentum BY NAME SELECT * FROM match_momentum_df"
                             )

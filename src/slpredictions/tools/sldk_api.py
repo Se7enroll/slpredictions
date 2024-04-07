@@ -129,6 +129,7 @@ def get_xg_time(event_id: int) -> DataFrame:
     except Exception:
         logger.error("Failed to get detailed xG for match id %s", event_id)
 
+
 @_persist_to_file()
 def get_momentum(event_id: int) -> DataFrame:
     try:
