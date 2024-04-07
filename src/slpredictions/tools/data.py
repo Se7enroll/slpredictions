@@ -41,10 +41,7 @@ def get_matches(season_id: int) -> DataFrame:
     try:
         r = requests.get(_get_matches_endpoint(season_id))
         json = r.json()
-        res = pd.DataFrame(json["events"])
-        # filter out additional columns
-        return res[
-            [
+        cols = [
                 "tournamentId",
                 "roundNr",
                 "eventId",
@@ -59,7 +56,10 @@ def get_matches(season_id: int) -> DataFrame:
                 "hasOptaMomentum",
                 "statusType",
             ]
-        ]
+        placeholder = pd.DataFrame(columns=cols)   # ensure all columns even if not present in dataset
+        res = pd.concat([placeholder, pd.DataFrame(json["events"])])
+        # filter out additional columns
+        return res[cols]  # extra specification to select only wanted cols
     except Exception as e:
         Exception("Error while getting match details.", e)
 
