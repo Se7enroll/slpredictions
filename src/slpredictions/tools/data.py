@@ -8,7 +8,7 @@ from pandas import DataFrame
 from .at import access_token
 
 logging.basicConfig(
-    format="%(asctime)s %(name)-12s %(levelname)-8s %(message)s", level=logging.DEBUG
+    format="%(asctime)s %(name)-12s %(levelname)-8s %(message)s", level=logging.INFO
 )
 logger = logging.getLogger(__name__)
 
