@@ -8,6 +8,9 @@ from pandas import DataFrame
 
 logger = logging.getLogger(__name__)
 
+# todo: fix downcasting...
+pd.set_option("future.no_silent_downcasting", True)
+
 
 def scrapeAllValues() -> DataFrame:
     currentYear = datetime.datetime.now().year
