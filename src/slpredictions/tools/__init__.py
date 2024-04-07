@@ -7,9 +7,9 @@ def main() -> int:
     print("Hello from slpredictions!")
     with db.connect("sl.db") as con:
         # setup tables
-        con.sql("CREATE OR REPLACE TABLE SEASONS(id int64 PRIMARY KEY, year varchar);")
+        con.sql("CREATE IF NOT EXISTS TABLE SEASONS(id int64 PRIMARY KEY, year varchar);")
         con.sql(
-            """CREATE OR REPLACE TABLE Matches(
+            """CREATE IF NOT EXISTS TABLE Matches(
                 tournamentId int64 REFERENCES Seasons(id), 
                 eventId int64 PRIMARY KEY,
                 roundNr int8, 
@@ -26,7 +26,7 @@ def main() -> int:
         );""".replace("\n", "")
         )
         con.sql(
-            "CREATE OR REPLACE TABLE MatchData(teamId int16, eventId int64 REFERENCES Matches(eventId), variable varchar, value double);"
+            "CREATE IF NOT EXISTS TABLE MatchData(teamId int16, eventId int64 REFERENCES Matches(eventId), variable varchar, value double);"
         )
 
         seasons_df = get_seasons()
