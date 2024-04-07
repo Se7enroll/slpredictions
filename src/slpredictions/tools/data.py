@@ -1,10 +1,17 @@
 import requests
+import logging
 import pandas as pd
 from diskcache import Cache
 from pandas import DataFrame
 
 # Generate your own access token from superliga.dk
 from .at import access_token
+
+logging.basicConfig(
+    format="%(asctime)s %(name)-12s %(levelname)-8s %(message)s", 
+    level=logging.DEBUG
+)
+l = logging.getLogger(__name__)
 
 
 def persist_to_file(file_name="apicache.dat"):
@@ -30,10 +37,10 @@ def get_seasons() -> DataFrame:
     try:
         r = requests.get(_get_season_endpoint())
         json = r.json()
-        print(f"Seasons downloaded. Current season {json['seasonId']}")
+        l.info("Seasons downloaded. Current season %s", json["seasonId"])
         return pd.DataFrame(json["seasons"])
     except Exception as e:
-        Exception("Error getting seasons.", e)
+        l.error("Error getting seasons.", exc_info=True)
 
 
 @persist_to_file()
@@ -63,7 +70,7 @@ def get_matches(season_id: int) -> DataFrame:
         # filter out additional columns
         return res[cols]  # extra specification to select only wanted cols
     except Exception as e:
-        Exception("Error while getting match details.", e)
+        l.error("Error while getting match details.", exc_info=True)
 
 
 @persist_to_file()
@@ -82,7 +89,7 @@ def get_match_data(event_id: int) -> DataFrame:
         res.set_index(["eventId"], append=True, inplace=True)
         return res
     except Exception as e:
-        Exception(f"Error getting match data for match: {event_id}", e)
+        l.error("Error getting match data for match: %i", event_id, exc_info=True)
 
 
 # base end points
