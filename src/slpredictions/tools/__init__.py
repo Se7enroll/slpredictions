@@ -8,7 +8,8 @@ def main() -> int:
     with db.connect("sl.db") as con:
         # setup tables
         con.sql("CREATE OR REPLACE TABLE SEASONS(id int64 PRIMARY KEY, year varchar);")
-        con.sql("""CREATE OR REPLACE TABLE Matches(
+        con.sql(
+            """CREATE OR REPLACE TABLE Matches(
                 tournamentId int64 REFERENCES Seasons(id), 
                 eventId int64 PRIMARY KEY,
                 roundNr int8, 
@@ -22,16 +23,19 @@ def main() -> int:
                 hasOpta boolean,
                 hasOptaMomentum boolean,
                 statusType varchar
-        );""".replace("\n", ""))
-        con.sql("CREATE OR REPLACE TABLE MatchData(teamId int16, eventId int64 REFERENCES Matches(eventId), variable varchar, value double);")
+        );""".replace("\n", "")
+        )
+        con.sql(
+            "CREATE OR REPLACE TABLE MatchData(teamId int16, eventId int64 REFERENCES Matches(eventId), variable varchar, value double);"
+        )
 
         seasons_df = get_seasons()
-        #seasons_df = seasons_df.tail(2)        # take last n seasons
-        #seasons_df = seasons_df.iloc[::-1]     # reverse order, so latest season is first
+        # seasons_df = seasons_df.tail(2)        # take last n seasons
+        # seasons_df = seasons_df.iloc[::-1]     # reverse order, so latest season is first
         no_of_seasons = seasons_df["id"].count()
-        
+
         con.sql("INSERT OR IGNORE INTO Seasons BY NAME SELECT * FROM seasons_df")
-        
+
         # iterate over all seasons:
         for s_idx, season_row in seasons_df.iterrows():
             print(f"getting season {season_row['year']} out of {no_of_seasons}.")
@@ -51,18 +55,20 @@ def main() -> int:
             for idx, match_row in matches_df.iterrows():
                 if idx % 10 == 0:
                     print(f"getting match {idx} of {no_of_matches}")
-                if match_row["statusType"] == "finished" and match_row["hasOpta"]:
+                if (
+                    match_row["statusType"] == "finished"
+                    and match_row["hasOpta"] is True
+                ):  # hasOpta can be nan
                     res.append(get_match_data(match_row["eventId"]))
             print("done getting matches")
-            
+
             if not res:
                 print(f"warning: no match data for {season_id}!")
                 continue
-            
             matchdata_df = pd.concat(res)
             value_cols = matchdata_df.columns
             matchdata_df.reset_index(inplace=True)
-            matchdata_df.rename(columns={"level_0":"teamId"}, inplace=True)
+            matchdata_df.rename(columns={"level_0": "teamId"}, inplace=True)
             index_cols = ["teamId", "eventId"]
             matchdata_df = pd.melt(matchdata_df, index_cols, value_cols)
 

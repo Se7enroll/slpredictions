@@ -12,6 +12,9 @@ wheels/
 src/slpredictions/tools/at.py
 
 # cache and db
-src/slpredictions/*.db
+#src/slpredictions/*.db
 src/slpredictions/apicache.dat
+src/slpredictions/apicache.dat/
 src/slpredictions/apicache.dat/*
+apicache.dat/*
+src/slpredictions/apicache.dat/cache.db

@@ -42,21 +42,23 @@ def get_matches(season_id: int) -> DataFrame:
         r = requests.get(_get_matches_endpoint(season_id))
         json = r.json()
         cols = [
-                "tournamentId",
-                "roundNr",
-                "eventId",
-                "homeId",
-                "awayId",
-                "homeName",
-                "awayName",
-                "detailedScore",
-                "stoppageTimeHT",
-                "stoppageTimeFT",
-                "hasOpta",
-                "hasOptaMomentum",
-                "statusType",
-            ]
-        placeholder = pd.DataFrame(columns=cols)   # ensure all columns even if not present in dataset
+            "tournamentId",
+            "roundNr",
+            "eventId",
+            "homeId",
+            "awayId",
+            "homeName",
+            "awayName",
+            "detailedScore",
+            "stoppageTimeHT",
+            "stoppageTimeFT",
+            "hasOpta",
+            "hasOptaMomentum",
+            "statusType",
+        ]
+        placeholder = pd.DataFrame(
+            columns=cols
+        )  # ensure all columns even if not present in dataset
         res = pd.concat([placeholder, pd.DataFrame(json["events"])])
         # filter out additional columns
         return res[cols]  # extra specification to select only wanted cols
