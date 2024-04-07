@@ -51,6 +51,8 @@ logical-unification==0.4.6
     # via cons
     # via minikanren
     # via pytensor
+lxml==5.2.1
+    # via slpredictions
 matplotlib==3.8.4
     # via arviz
 minikanren==1.0.3
