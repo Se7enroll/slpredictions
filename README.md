@@ -23,4 +23,8 @@ Table with momentum, i.e. team difference in possesion value on a minute basis.
 
 ## sldk_api
 
-A collection of functions for accessing the somewhat hidden superliga.dk API. In order to use these functions a `at.py` file with the variable `access_token` set to your personal acess token for the API. *hint: you can obtain this token by inspecting a page with match data on superliga.dk*. 
+A collection of functions for accessing the somewhat hidden superliga.dk API. In order to use these functions a `at.py` file with the variable `access_token` set to your personal acess token for the API. *hint: you can obtain this token by inspecting a page with match data on superliga.dk*.
+
+## transfermarkt_values
+
+A collection of functions that scrapes the market value, average age and squad size for the superliga from Transfermarkt.
