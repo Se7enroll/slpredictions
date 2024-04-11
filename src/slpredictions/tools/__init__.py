@@ -1,23 +1,18 @@
 import logging
 import duckdb as db
-from .sldk_api import (
-    get_seasons,
-    get_matches,
-    get_match_stats,
-    get_momentum,
-    get_xg_time,
-)
+from .sldk_api import SLDK
 
 logger = logging.getLogger(__name__)
 
 
 def main() -> int:
     logger.info("Starting database update.")
+    sldk = SLDK()
     with db.connect("src/sl.db") as con:
         setup_tables(con)
 
         logger.info("Getting seasons...")
-        seasons_df = get_seasons()
+        seasons_df = sldk.get_seasons()
         no_of_seasons = seasons_df["id"].count()
         con.sql("INSERT OR IGNORE INTO Seasons BY NAME SELECT * FROM seasons_df")
         logger.info("Done getting and saving seasons.")
@@ -39,7 +34,7 @@ def main() -> int:
                 logger.info("season %s already in database. Skipping.", season_id)
                 continue
 
-            matches_df = get_matches(season_id)
+            matches_df = sldk.get_matches(season_id)
 
             if matches_df is None:
                 logger.warning("Failed to get matches for %s!", season_id)
@@ -53,20 +48,20 @@ def main() -> int:
                     logger.info("Fetting stats for match %s of %s.", idx, no_of_matches)
                 if match_row["statusType"] == "finished":
                     if match_row["hasOpta"] is True:  # hasOpta can be nan
-                        match_stats_df = get_match_stats(match_row["eventId"])
+                        match_stats_df = sldk.get_match_stats(match_row["eventId"])
                         if match_stats_df is not None and not match_stats_df.empty:
                             con.sql(
                                 "INSERT INTO MatchStats BY NAME SELECT * FROM match_stats_df"
                             )
 
-                        match_xg_df = get_xg_time(match_row["eventId"])
+                        match_xg_df = sldk.get_xg_time(match_row["eventId"])
                         if match_xg_df is not None and not match_xg_df.empty:
                             con.sql(
                                 "INSERT INTO MatchXG BY NAME SELECT * FROM match_xg_df"
                             )
 
                     if match_row["hasOptaMomentum"] is True:  # hasMomentum can be nan
-                        match_momentum_df = get_momentum(match_row["eventId"])
+                        match_momentum_df = sldk.get_momentum(match_row["eventId"])
                         if (
                             match_momentum_df is not None
                             and not match_momentum_df.empty
@@ -131,4 +126,15 @@ def setup_tables(con):
                 teamId int16
                 );
                 """.replace("\n", "")
+    )
+    con.sql(
+        """CREATE TABLE IF NOT EXISTS MarketValues(
+        team varchar,
+        numPlayers int8,
+        meanAge double,
+        meanValue double,
+        totalValue double,
+        season varchar
+        );
+    """.replace("\n","")
     )

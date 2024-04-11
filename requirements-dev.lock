@@ -10,6 +10,8 @@
 -e file:.
 arviz==0.17.1
     # via pymc
+ayjay==0.1.0
+    # via slpredictions
 cachetools==5.3.3
     # via pymc
 certifi==2024.2.2
@@ -27,6 +29,7 @@ contourpy==1.2.1
 cycler==0.12.1
     # via matplotlib
 diskcache==5.6.3
+    # via ayjay
     # via slpredictions
 duckdb==0.10.1
     # via slpredictions
@@ -79,6 +82,7 @@ packaging==24.0
     # via xarray
 pandas==2.2.1
     # via arviz
+    # via ayjay
     # via pymc
     # via slpredictions
     # via xarray
@@ -96,6 +100,7 @@ python-dateutil==2.9.0.post0
 pytz==2024.1
     # via pandas
 requests==2.31.0
+    # via ayjay
     # via slpredictions
 scipy==1.13.0
     # via arviz

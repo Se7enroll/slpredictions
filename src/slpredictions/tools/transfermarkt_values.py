@@ -81,7 +81,7 @@ def scrapeValues(year: int = None) -> DataFrame:
         data["team"] = data["team"].str.replace("ö", "ø")
         data["team"] = data["team"].apply(_FixTeamName)
 
-        data["season"] = year
+        data["season"] = str(year) + "/" + str(year + 1)
 
     else:
         logger.warning("No market values parsed for year %s.", year)
