@@ -28,7 +28,7 @@ def main() -> int:
 
             # Check if matches already exists if not download matches.
             logger.info("Getting matches for season id %s...", season_id)
-            if not con.sql(
+            if con.sql(
                 f"SELECT * FROM Matches WHERE tournamentId = {season_id} LIMIT 1;"
             ).fetchone():
                 logger.info("season %s already in database. Skipping.", season_id)
@@ -136,5 +136,5 @@ def setup_tables(con):
         totalValue double,
         season varchar
         );
-    """.replace("\n","")
+    """.replace("\n", "")
     )

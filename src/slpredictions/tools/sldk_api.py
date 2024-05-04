@@ -26,10 +26,9 @@ class SLDK:
     def get_seasons(self) -> DataFrame:
         try:
             endpoint = (
-                self._base_url + "tournaments/46"
-            )  # 46 denotes the sport football.
+                self._base_url + "tournaments/46"  # 46 denotes the sport football.
+            )
             res = self.ayjay.get(endpoint, self._base_params)
-            print(res)
             logger.info("Seasons downloaded. Current season %s", res["seasonId"])
             return pd.DataFrame(res["seasons"])
         except Exception:
@@ -37,8 +36,9 @@ class SLDK:
 
     def get_matches(self, season_id: int) -> DataFrame:
         try:
-            endpoint = self._base_url + "/events-v2"
-            params = self._base_params.update(
+            endpoint = self._base_url + "events-v2"
+            params = self._base_params.copy()
+            params.update(
                 {"seasonId": season_id, "appName": "dk.releaze.livecenter.spdk"}
             )
             json = self.ayjay.get(endpoint, params)
@@ -68,7 +68,7 @@ class SLDK:
 
     def get_match_stats(self, event_id: int) -> DataFrame:
         try:
-            endpoint = self._base_url + f"/opta-stats/events/{event_id}/teams"
+            endpoint = self._base_url + f"opta-stats/events/{event_id}/teams"
             json = self.ayjay.get(endpoint, self._base_params)
             spectators = json["spectators"]
             home_id = json["homeId"]
@@ -92,7 +92,7 @@ class SLDK:
     def get_xg_time(self, event_id: int) -> DataFrame:
         try:
             endpoint = (
-                self._base_url + f"/opta-stats/event/{event_id}/detail-expected-goals"
+                self._base_url + f"opta-stats/event/{event_id}/detail-expected-goals"
             )
             json = self.ayjay.get(endpoint, self._base_params)
             home_id = json["homeId"]
@@ -114,11 +114,13 @@ class SLDK:
             res = pd.concat([homestat, awaystat]).assign(eventId=event_id)
             return res
         except Exception:
-            logger.error("Failed to get detailed xG for match id %s", event_id)
+            logger.error(
+                "Failed to get detailed xG for match id %s", event_id, exc_info=True
+            )
 
     def get_momentum(self, event_id: int) -> DataFrame:
         try:
-            endpoint = f"/opta-stats/events/{event_id}/momentum"
+            endpoint = self._base_url + f"opta-stats/events/{event_id}/momentum"
             json = self.ayjay.get(endpoint, self._base_params)
             res = pd.DataFrame(json["momentum"])
             posession_value = pd.json_normalize(res["scores"]).add_suffix(
@@ -133,4 +135,6 @@ class SLDK:
             ).assign(eventId=event_id)
             return res
         except Exception:
-            logger.error("Failed to get momentum for match id %s", event_id)
+            logger.error(
+                "Failed to get momentum for match id %s", event_id, exc_info=True
+            )

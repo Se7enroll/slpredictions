@@ -10,7 +10,7 @@
 -e file:.
 arviz==0.17.1
     # via pymc
-ayjay==0.1.0
+ayjay==0.1.2
     # via slpredictions
 cachetools==5.3.3
     # via pymc
